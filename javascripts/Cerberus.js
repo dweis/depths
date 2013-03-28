@@ -1,3 +1,6 @@
+var b2Vec2 = Box2D.Common.Math.b2Vec2
+  , b2Math = Box2D.Common.Math.b2Math;
+
 function Cerberus(world, map) {
   this.world = world;
   this.map = map;

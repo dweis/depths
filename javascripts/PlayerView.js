@@ -1,6 +1,5 @@
 PlayerView = function(model, scene, player, mapView) {
   this.model = model;
-  //this.inputHandler = inputHandler;
   this.target = new THREE.Vector3();
   this.player = player;
   this.mapView = mapView;
@@ -24,6 +23,8 @@ PlayerView = function(model, scene, player, mapView) {
   scene.threeData.add(this.object);
 
   this.createCamera();
+
+  player.view = this;
 }
 
 PlayerView.prototype.update = function() {

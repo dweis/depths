@@ -8,6 +8,7 @@ MyApp = function( veroldApp ) {
   this.mainScene;
   this.camera;
   this.controls;
+  this.mobs = [];
 
   this.projector = new THREE.Projector();
 }
@@ -16,7 +17,7 @@ MyApp.prototype.startup = function( ) {
 
   var that = this;
 
-  this.veroldApp.veroldEngine.Renderer.stats.domElement.hidden = true;
+  this.veroldApp.veroldEngine.Renderer.stats.domElement.hidden = false;
 
   this.veroldApp.loadScene( null, {
     
@@ -61,6 +62,7 @@ MyApp.prototype.startup = function( ) {
       that.createMap();
       that.createPlayer();
       that.createMousePlane();
+      that.createMonsters();
     },
 
     progress: function(sceneObj) {
@@ -117,11 +119,32 @@ MyApp.prototype.createPlayer = function() {
   this.player = new Player(this.world, this.map);
   this.player.createBody(this.map.getStartingPositionXY());
 
+  this.mobs.push(this.player);
+
   this.veroldApp.loadScript('javascripts/vendor/OrbitControls.js', function() {
     that.playerView = new PlayerView(model, that.mainScene, that.player, that.mapView);
 
     that.veroldApp.setActiveCamera( that.playerView.getCamera() );
   });
+}
+
+MyApp.prototype.createMonsters = function() { 
+  var i, spawnXY, mob, that = this;
+
+  var model = this.mainScene.getObject('51436a377290e30200000478')
+  this.mainScene.removeChildObject(model);
+
+  model.load({ success_hierarchy: function() {
+    for (i = 0; i < 20; i++) {
+      model.clone({ success_hierarchy: function(modelInstance) {
+        mob = new Cerberus(that.world, that.map);
+        mob.createBody(that.map.getRandomSpawnXY());
+
+        that.mobs.push(mob);
+        new CerberusView(modelInstance, that.mainScene, mob, that.mapView);
+      }});
+    }
+  }});
 }
 
 MyApp.prototype.shutdown = function() {
@@ -135,15 +158,24 @@ MyApp.prototype.shutdown = function() {
   
 
 MyApp.prototype.update = function( delta ) {
-  if (this.playerView) this.playerView.update();
+  //if (this.playerView) this.playerView.update();
   if (this.controls) this.controls.update();
+    for (var i = 0; i < this.mobs.length; i ++) {
+      this.mobs[i].view.update(delta);
+    }
+
+  //for (var i = 0; i < this.mobs.length; i++) {
+  //  this.mobs[i].update();
+  //}
 }
 
 MyApp.prototype.fixedUpdate = function( delta ) {
   if (this.world) {
     this.world.Step(1/60, 1, 1);
     this.world.DrawDebugData();
-    this.player.update();
+    for (var i = 0; i < this.mobs.length; i ++) {
+      this.mobs[i].update(delta, this.mobs);
+    }
   }
 }
 
