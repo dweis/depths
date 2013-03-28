@@ -155,18 +155,14 @@ MyApp.prototype.shutdown = function() {
   this.veroldApp.off("update", this.update, this );
 }
 
-  
-
 MyApp.prototype.update = function( delta ) {
-  //if (this.playerView) this.playerView.update();
   if (this.controls) this.controls.update();
-    for (var i = 0; i < this.mobs.length; i ++) {
+
+  for (var i = 0; i < this.mobs.length; i ++) {
+    if (this.mobs[i].view) {
       this.mobs[i].view.update(delta);
     }
-
-  //for (var i = 0; i < this.mobs.length; i++) {
-  //  this.mobs[i].update();
-  //}
+  }
 }
 
 MyApp.prototype.fixedUpdate = function( delta ) {

@@ -84,7 +84,7 @@ var AppUI = (function() {
       this.hideHeaders();
       this.showMenus();
       this.initOverlayUI();
-      this.showControls();
+      //this.showControls();
     },
 
     initOverlayUI : function() {
