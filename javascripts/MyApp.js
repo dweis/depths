@@ -7,6 +7,8 @@ MyApp = function( veroldApp ) {
   this.mainScene;
   this.camera;
   this.controls;
+
+  this.projector = new THREE.Projector();
 }
 
 MyApp.prototype.startup = function( ) {
@@ -57,6 +59,7 @@ MyApp.prototype.startup = function( ) {
 
       that.createMap();
       that.createPlayer();
+      that.createMousePlane();
     },
 
     progress: function(sceneObj) {
@@ -64,6 +67,25 @@ MyApp.prototype.startup = function( ) {
       AppUI.setLoadingProgress(percent); 
     }
   });
+}
+
+MyApp.prototype.createMousePlane = function() {
+  var mapWidth = this.mapView.getWorldWidth()
+    , mapHeight = this.mapView.getWorldHeight();
+
+  var material = new THREE.MeshBasicMaterial({ color: 0xcc0000 });
+  var planeGeo = new THREE.PlaneGeometry( mapWidth, mapHeight, 1, 1 );
+
+  planeGeo.applyMatrix( new THREE.Matrix4().makeRotationX( - Math.PI / 2 ) );
+  planeGeo.computeTangents();
+
+  this.mousePlane = new THREE.Mesh(planeGeo, material);
+  this.mousePlane.position.y = 0.01;
+  this.mousePlane.position.x = mapWidth/2;
+  this.mousePlane.position.z = mapHeight/2;
+  this.mousePlane.visible = true;
+
+  this.mainScene.threeData.add(this.mousePlane);
 }
 
 MyApp.prototype.createMap = function() {
@@ -109,11 +131,13 @@ MyApp.prototype.update = function( delta ) {
 }
 
 MyApp.prototype.fixedUpdate = function( delta ) {
-
+  if (this.world) {
+    this.world.Step(1/60, 1, 1);
+  }
 }
 
 MyApp.prototype.onMouseUp = function( event ) {
-  
+  /*
   if ( event.button == this.inputHandler.mouseButtons[ "left" ] && 
     !this.inputHandler.mouseDragStatePrevious[ event.button ] ) {
     
@@ -125,6 +149,32 @@ MyApp.prototype.onMouseUp = function( event ) {
       if ( pickData.meshID == "51125eb50a4925020000000f") {
         //Do stuff
       }
+    }
+  }
+  */
+  var vector, cameraWorldPos, camera, raycaster, intersects;
+
+  if ( event.button == this.inputHandler.mouseButtons[ "left" ] &&
+    !this.inputHandler.mouseDragStatePrevious[ event.button ] ) {
+    camera = this.playerView.getCamera();
+
+    var mouseX = (event.clientX / window.innerWidth)*2-1;
+    var mouseY = -(event.clientY /window.innerHeight)*2+1;
+
+    cameraWorldPos = new THREE.Vector3();
+    cameraWorldPos.copy(this.playerView.object.position);
+    cameraWorldPos.add(camera.position);
+
+    vector = new THREE.Vector3( mouseX, mouseY, 1.0 );
+    this.projector.unprojectVector( vector, camera );
+    raycaster = new THREE.Raycaster( cameraWorldPos, vector.sub( cameraWorldPos ).normalize() );
+
+    intersects = raycaster.intersectObjects( [this.mousePlane]);
+
+    if (intersects[0]) {
+      console.log(intersects[0].point);
+      this.player.setTarget(intersects[0].point.x, intersects[0].point.z);
+      //this.player.setTarget(intersects[0].point.x, intersects[0].point.z);
     }
   }
 }

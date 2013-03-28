@@ -22,9 +22,6 @@ THREE.OrbitControls = function ( object, domElement ) {
 	this.userRotate = true;
 	this.userRotateSpeed = 1.0;
 
-	this.userPan = false;
-	this.userPanSpeed = 2.0;
-
 	this.autoRotate = false;
 	this.autoRotateSpeed = 2.0; // 30 seconds per round when fps is 60
 
@@ -33,8 +30,6 @@ THREE.OrbitControls = function ( object, domElement ) {
 
 	this.minDistance = 0;
 	this.maxDistance = Infinity;
-
-	this.keys = { LEFT: 37, UP: 38, RIGHT: 39, BOTTOM: 40 };
 
 	// internals
 
@@ -60,7 +55,7 @@ THREE.OrbitControls = function ( object, domElement ) {
 
 	var lastPosition = new THREE.Vector3();
 
-	var STATE = { NONE: -1, ROTATE: 0, ZOOM: 1, PAN: 2, TOUCH_ROTATE: 3, TOUCH_ZOOM: 4, TOUCH_PAN: 5 };
+	var STATE = { NONE: -1, ROTATE: 0, ZOOM: 1, TOUCH_ROTATE: 3, TOUCH_ZOOM: 4 };
 	var state = STATE.NONE;
 
 	// events
@@ -137,16 +132,6 @@ THREE.OrbitControls = function ( object, domElement ) {
 		}
 
 		scale *= zoomScale;
-
-	};
-
-	this.pan = function ( distance ) {
-
-		distance.transformDirection( this.object.matrix );
-		distance.multiplyScalar( scope.userPanSpeed );
-
-		this.object.position.add( distance );
-		this.center.add( distance );
 
 	};
 
@@ -234,21 +219,11 @@ THREE.OrbitControls = function ( object, domElement ) {
 
 		event.preventDefault();
 
-		if ( event.button === 0 ) {
+		if ( event.button === 2 ) {
 
 			state = STATE.ROTATE;
 
 			rotateStart.set( event.clientX, event.clientY );
-
-		} else if ( event.button === 1 ) {
-
-			state = STATE.ZOOM;
-
-			zoomStart.set( event.clientX, event.clientY );
-
-		} else if ( event.button === 2 ) {
-
-			state = STATE.PAN;
 
 		}
 
@@ -271,32 +246,7 @@ THREE.OrbitControls = function ( object, domElement ) {
 
 			rotateStart.copy( rotateEnd );
 
-		} else if ( state === STATE.ZOOM ) {
-
-			zoomEnd.set( event.clientX, event.clientY );
-			zoomDelta.subVectors( zoomEnd, zoomStart );
-
-			if ( zoomDelta.y > 0 ) {
-
-				scope.zoomIn();
-
-			} else {
-
-				scope.zoomOut();
-
-			}
-
-			zoomStart.copy( zoomEnd );
-
-		} else if ( state === STATE.PAN ) {
-
-			var movementX = event.movementX || event.mozMovementX || event.webkitMovementX || 0;
-			var movementY = event.movementY || event.mozMovementY || event.webkitMovementY || 0;
-
-			scope.pan( new THREE.Vector3( - movementX, movementY, 0 ) );
-
 		}
-
 	}
 
 	function onMouseUp( event ) {
@@ -338,37 +288,12 @@ THREE.OrbitControls = function ( object, domElement ) {
 
 	}
 
-	function onKeyDown( event ) {
-
-		if ( ! scope.userPan ) return;
-
-		switch ( event.keyCode ) {
-
-			case scope.keys.UP:
-				scope.pan( new THREE.Vector3( 0, 1, 0 ) );
-				break;
-			case scope.keys.BOTTOM:
-				scope.pan( new THREE.Vector3( 0, - 1, 0 ) );
-				break;
-			case scope.keys.LEFT:
-				scope.pan( new THREE.Vector3( - 1, 0, 0 ) );
-				break;
-			case scope.keys.RIGHT:
-				scope.pan( new THREE.Vector3( 1, 0, 0 ) );
-				break;
-		}
-
-	}
-
 	function touchstart( event ) {
-
-		//if ( _this.enabled === false ) return;
 
 		switch ( event.touches.length ) {
 
 			case 1:
 				state = STATE.TOUCH_ROTATE;
-				//rotateStart = _rotateEnd = _this.getMouseProjectionOnBall( event.touches[ 0 ].clientX, event.touches[ 0 ].clientY );
 			  rotateStart.set( event.touches[0].clientX, event.touches[0].clientY );
 
 				break;
@@ -380,11 +305,6 @@ THREE.OrbitControls = function ( object, domElement ) {
         _touchZoomDistanceEnd = _touchZoomDistanceStart = Math.sqrt( dx * dx + dy * dy );
 				break;
 
-			case 3:
-				state = STATE.TOUCH_PAN;
-				// _panStart = _panEnd = _this.getMouseOnScreen( event.touches[ 0 ].clientX, event.touches[ 0 ].clientY );
-				break;
-
 			default:
 				state = STATE.NONE;
 
@@ -393,8 +313,6 @@ THREE.OrbitControls = function ( object, domElement ) {
 	}
 
 	function touchmove( event ) {
-
-		//if ( _this.enabled === false ) return;
 
 		event.preventDefault();
 		event.stopPropagation();
@@ -417,10 +335,6 @@ THREE.OrbitControls = function ( object, domElement ) {
         _touchZoomDistanceEnd = Math.sqrt( dx * dx + dy * dy )
 				break;
 
-			case 3:
-				// _panEnd = _this.getMouseOnScreen( event.touches[ 0 ].clientX, event.touches[ 0 ].clientY );
-				break;
-
 			default:
 				state = STATE.NONE;
 
@@ -429,9 +343,6 @@ THREE.OrbitControls = function ( object, domElement ) {
 	}
 
 	function touchend( event ) {
-
-		//if ( _this.enabled === false ) return;
-
 		switch ( event.touches.length ) {
 
 			case 1:
@@ -440,10 +351,6 @@ THREE.OrbitControls = function ( object, domElement ) {
 
 			case 2:
         _touchZoomDistanceStart = _touchZoomDistanceEnd = 0;
-				break;
-
-			case 3:
-				// _panStart = _panEnd = _this.getMouseOnScreen( event.touches[ 0 ].clientX, event.touches[ 0 ].clientY );
 				break;
 
 		}
@@ -456,7 +363,6 @@ THREE.OrbitControls = function ( object, domElement ) {
 	this.domElement.addEventListener( 'mousedown', onMouseDown, false );
 	this.domElement.addEventListener( 'mousewheel', onMouseWheel, false );
 	this.domElement.addEventListener( 'DOMMouseScroll', onMouseWheel, false ); // firefox
-	this.domElement.addEventListener( 'keydown', onKeyDown, false );
 
 	this.domElement.addEventListener( 'touchstart', touchstart, false );
 	this.domElement.addEventListener( 'touchend', touchend, false );

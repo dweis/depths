@@ -68,8 +68,13 @@ PlayerView.prototype.update = function() {
 */
   this.controls.update();
   //this.object.position.set(
-  var position = this.player.body.GetPosition();
-  this.mapView.translateToMapPosition(this.object, position.x || 0, position.y || 0);
+  var position = this.player.body.GetPosition()
+    , angle = this.player.body.GetAngle();
+
+  this.mapView.translateToMapPosition(this.object, position.x, position.y);
+
+  //this.object.quaternion.setFromAxisAngle(new THREE.Vector3(0,1,0), angle);
+  //this.object.quaternion.copy(this.tmpQuaternion);
 }
 
 PlayerView.prototype.setAnimation = function(animation) {

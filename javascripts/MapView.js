@@ -137,6 +137,6 @@ MapView.prototype.init = function() {
 }
 
 MapView.prototype.translateToMapPosition = function(obj, x, y) {
-  obj.position.x = -this.map.mapWidth + x * this.scaleFactor;
-  obj.position.z = -this.map.mapHeight + y * this.scaleFactor;
+  obj.position.x = x * this.scaleFactor;
+  obj.position.z = y * this.scaleFactor;
 }
