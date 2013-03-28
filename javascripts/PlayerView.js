@@ -26,55 +26,25 @@ PlayerView = function(model, scene, player, mapView) {
   this.createCamera();
 }
 
-/*
-PlayerView.prototype.keyDown = function(key) {
-  return this.inputHandler.keyDown(key);
-}
-
-PlayerView.prototype.fixedUpdate = function(delta) {
-	var keyCodes = this.inputHandler.keyCodes;
-
-  if (this.keyDown('W')) {
-    this.object.translateZ(0.015);
-  }
-
-  if (this.keyDown('A')) {
-    this.tmpQuaternion.setFromAxisAngle(new THREE.Vector3(0,1,0), 0.05);
-    this.object.quaternion.multiply(this.tmpQuaternion);
-  }
-
-  if (this.keyDown('S')) {
-    this.object.translateZ(-0.010);
-  }
-
-  if (this.keyDown('D')) {
-    this.tmpQuaternion.setFromAxisAngle(new THREE.Vector3(0,1,0), -0.05);
-    this.object.quaternion.multiply(this.tmpQuaternion);
-  }
-}
-*/
-
 PlayerView.prototype.update = function() {
-/*
-	var keyCodes = this.inputHandler.keyCodes;
-
-  if (this.keyDown('space')) {
-    this.setAnimation('Attack');
-  } else if (this.keyDown('W') || this.keyDown('A') || this.keyDown('S') || this.keyDown('D')) {
-    this.setAnimation('Walk');
-  } else {
-    this.setAnimation('Idle');
-  }
-*/
-  this.controls.update();
-  //this.object.position.set(
   var position = this.player.body.GetPosition()
     , angle = this.player.body.GetAngle();
 
+  this.controls.update();
+
   this.mapView.translateToMapPosition(this.object, position.x, position.y);
 
-  //this.object.quaternion.setFromAxisAngle(new THREE.Vector3(0,1,0), angle);
-  //this.object.quaternion.copy(this.tmpQuaternion);
+  this.tmpQuaternion.setFromAxisAngle(new THREE.Vector3(1,0,0), -(Math.PI / 2));
+  this.model.threeData.quaternion.copy(this.tmpQuaternion);
+  this.tmpQuaternion.setFromAxisAngle(new THREE.Vector3(0,0,-1), angle - (Math.PI / 2));
+  this.model.threeData.quaternion.multiply(this.tmpQuaternion);
+
+  if (this.player.body.GetLinearVelocity().Length() > 0.1) {
+    this.setAnimation('Walk');
+  } else {
+    this.setAnimation('Idle');
+
+  }
 }
 
 PlayerView.prototype.setAnimation = function(animation) {
@@ -116,11 +86,4 @@ PlayerView.prototype.createCamera = function() {
 
   this.controls.minDistance = 0.5;
   this.controls.maxDistance = 2;
-}
-
-PlayerView.prototype.setTarget = function(x, y) {
-  this.target.x = x;
-  this.target.z = y;
-
-  this.object.position.copy(this.target);
 }

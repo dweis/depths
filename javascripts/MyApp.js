@@ -1,5 +1,6 @@
 var b2Vec2 = Box2D.Common.Math.b2Vec2
-  , b2World = Box2D.Dynamics.b2World;
+  , b2World = Box2D.Dynamics.b2World
+  , b2DebugDraw = Box2D.Dynamics.b2DebugDraw;
 
 MyApp = function( veroldApp ) {
 
@@ -83,7 +84,7 @@ MyApp.prototype.createMousePlane = function() {
   this.mousePlane.position.y = 0.01;
   this.mousePlane.position.x = mapWidth/2;
   this.mousePlane.position.z = mapHeight/2;
-  this.mousePlane.visible = true;
+  this.mousePlane.visible = false;
 
   this.mainScene.threeData.add(this.mousePlane);
 }
@@ -97,6 +98,14 @@ MyApp.prototype.createMap = function() {
 
   this.mapView = new MapView(tileSet, this.mainScene, this.map);
   this.mapView.init();
+
+  this.debugDraw = new b2DebugDraw();
+  this.debugDraw.SetSprite(document.getElementById("box2ddebug").getContext("2d"));
+  this.debugDraw.SetDrawScale(256/18);
+  this.debugDraw.SetFillAlpha(0.3);
+  this.debugDraw.SetLineThickness(1.0);
+  this.debugDraw.SetFlags(b2DebugDraw.e_shapeBit | b2DebugDraw.e_jointBit);
+  this.world.SetDebugDraw(this.debugDraw);
 }
 
 MyApp.prototype.createPlayer = function() {
@@ -133,6 +142,8 @@ MyApp.prototype.update = function( delta ) {
 MyApp.prototype.fixedUpdate = function( delta ) {
   if (this.world) {
     this.world.Step(1/60, 1, 1);
+    this.world.DrawDebugData();
+    this.player.update();
   }
 }
 
@@ -172,9 +183,7 @@ MyApp.prototype.onMouseUp = function( event ) {
     intersects = raycaster.intersectObjects( [this.mousePlane]);
 
     if (intersects[0]) {
-      console.log(intersects[0].point);
       this.player.setTarget(intersects[0].point.x, intersects[0].point.z);
-      //this.player.setTarget(intersects[0].point.x, intersects[0].point.z);
     }
   }
 }

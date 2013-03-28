@@ -48,7 +48,7 @@ Mob.prototype.createBody = function(position) {
   fixDef.friction = 0.5;
   fixDef.restitution = 0.2;
 
-  fixDef.shape = new b2CircleShape(0.25);
+  fixDef.shape = new b2CircleShape(0.125);
 
   bodyDef = new b2BodyDef;
   bodyDef.type = b2Body.b2_dynamicBody;

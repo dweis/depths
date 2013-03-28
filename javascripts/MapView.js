@@ -128,7 +128,7 @@ MapView.prototype.init = function() {
 
         threeObj.scale = new THREE.Vector3(0.4, 0.4, 0.4);
 
-        that.translateToMapPosition(threeObj, x, y);
+        that.translateToMapPosition(threeObj, x + 0.5, y + 0.5);
 
         that.scene.threeData.add(threeObj);
       }
