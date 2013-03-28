@@ -226,11 +226,14 @@ function init() {
   debugDraw.SetLineThickness(1.0);
   debugDraw.SetFlags(b2DebugDraw.e_shapeBit | b2DebugDraw.e_jointBit);
   world.SetDebugDraw(debugDraw);
-  window.setInterval(update, 1000 / 60);
+  window.setInterval(update, 1000 / 15);
+
+  var canvasWidth = $('canvas').width()
+    , canvasHeight = $('canvas').height();
 
   function mousedown(e) {
-    var x = e.clientX / (800/map.mapWidth)
-      , y = e.clientY / (800/map.mapHeight)
+    var x = e.clientX / (canvasWidth/map.mapWidth)
+      , y = e.clientY / (canvasHeight/map.mapHeight)
       , body;
 
     if (body = getBodyAtMouse(x, y)) {
@@ -276,7 +279,7 @@ function init() {
 
 function update() {
    world.Step(
-         1 / 60   //frame-rate
+         1 / 15   //frame-rate
       ,  1       //velocity iterations
       ,  1       //position iterations
    );
