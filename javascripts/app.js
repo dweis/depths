@@ -221,7 +221,7 @@ function init() {
    //setup debug draw
   var debugDraw = new b2DebugDraw();
   debugDraw.SetSprite(document.getElementById("canvas").getContext("2d"));
-  debugDraw.SetDrawScale(800/map.mapWidth);
+  debugDraw.SetDrawScale(512/map.mapWidth);
   debugDraw.SetFillAlpha(0.3);
   debugDraw.SetLineThickness(1.0);
   debugDraw.SetFlags(b2DebugDraw.e_shapeBit | b2DebugDraw.e_jointBit);
