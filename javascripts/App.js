@@ -35,7 +35,7 @@ function getBodyAtMouse(mouseX, mouseY) {
 function createMonsters(world, map, mobs) {
   var i, spawnXY, mob;
 
-  for (i = 0; i < 20; i++) {
+  for (i = 0; i < 10; i++) {
     mob = new Cerberus(world, map);
     mob.createBody(map.getRandomSpawnXY());
 
@@ -48,7 +48,7 @@ function init() {
 
   world = new b2World(new b2Vec2(0, 0), true);
 
-  map = new Map(world);
+  map = new Map(world, 18, 18);
   map.createTiles();
   createMonsters(world, map, mobs);
 

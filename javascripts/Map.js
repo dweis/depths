@@ -1,7 +1,14 @@
-function Map(world) {
+var b2Vec2 = Box2D.Common.Math.b2Vec2
+  , b2BodyDef = Box2D.Dynamics.b2BodyDef
+  , b2Body = Box2D.Dynamics.b2Body
+  , b2FixtureDef = Box2D.Dynamics.b2FixtureDef
+  , b2MouseJointDef = Box2D.Dynamics.Joints.b2MouseJointDef
+  , b2PolygonShape = Box2D.Collision.Shapes.b2PolygonShape
+
+function Map(world, mapWidth, mapHeight) {
   this.world = world;
-  this.mapWidth = 20;
-  this.mapHeight = 20;
+  this.mapWidth = mapWidth || 20;
+  this.mapHeight = mapHeight || 20;
   this.cells = {
     WALL: 0,
     CORRIDOR: 1,
@@ -102,5 +109,3 @@ Map.prototype.createTile = function(pos) {
 
   this.world.CreateBody(bodyDef).CreateFixture(fixDef);
 }
-
-

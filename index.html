@@ -1,22 +1,116 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, initial-scale=1.0, maximum-scale=1.0">
-  <title>Shadowy Depths</title>
-  <style>
-    body { padding: 0px; margin: 0px; width: 100%; height: 100%; overflow: hidden; }
-    canvas { width: 100%; height: 100%; }
-  </style>
+  <title>Verold Three.JS Boilerplate</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+  <link rel="stylesheet" href="stylesheets/reset.css">
+  <link rel="stylesheet" href="stylesheets/style.css">
+  <script type="text/javascript" src="http://assets.verold.com/verold_api/verold_api_v1.js"></script>
+  <script type="text/javascript" src="javascripts/vendor/jquery-1.9.1.js"></script>
+  <script type="text/javascript" src="javascripts/vendor/underscore.js"></script>
+  <script type="text/javascript" src="javascripts/vendor/VeroldApp.js"></script>
+  <script type="text/javascript" src="javascripts/vendor/dungCarv.js"></script>
+  <script type="text/javascript" src="javascripts/vendor/Box2dWeb-2.1.a.3.js"></script>
+  <script type="text/javascript" src="javascripts/MyApp.js"></script>
+  <script type="text/javascript" src="javascripts/AppUI.js"></script>
+  <script type="text/javascript" src="javascripts/Map.js"></script>
+  <script type="text/javascript" src="javascripts/Mob.js"></script>
+  <script type="text/javascript" src="javascripts/Player.js"></script>
+  <script type="text/javascript" src="javascripts/Cerberus.js"></script>
+  <script type="text/javascript" src="javascripts/MapView.js"></script>
+  <script type="text/javascript" src="javascripts/PlayerView.js"></script>
+  <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,400italic' rel='stylesheet' type='text/css'>
+  <link href='http://fonts.googleapis.com/css?family=Lato:400,300,300italic,400italic,700,700italic' rel='stylesheet' type='text/css'>
 </head>
 <body>
-  <canvas id="canvas" width="512" height="512" style="background-color:#333333;" ></canvas>
-  <script src="javascripts/Box2dWeb-2.1.a.3.js"></script>
-  <script src="javascripts/jquery-1.9.1.js"></script>
-  <script src="javascripts/dungCarv.js"></script>
-  <script src="javascripts/map.js"></script>
-  <script src="javascripts/mob.js"></script>
-  <script src="javascripts/player.js"></script>
-  <script src="javascripts/cerberus.js"></script>
-  <script src="javascripts/app.js"></script>
+
+  <!-- facebook share button dependency -->
+  <div id="fb-root"></div>
+
+  <div id="poweredby">
+    <p>Powered by <a href="http://studio.verold.com" target="_blank"><img src="images/verold_logo_white.png" class="verold-logo" /></a> & <a href="http://mrdoob.github.com/three.js/" target="_blank"><img src="images/three_js_logo.png" class="threejs-logo" /></a></p>
+  </div>
+
+  <div id="render-target-container">
+  
+    <div id="info-panel" class="panel">
+      <a href="javascript:void(0);" class="close">&times;</a>
+      <h2>Information</h2>
+      <p>Use this panel to provide information related to you project.</p>
+    </div>
+
+    <div id="settings-panel" class="panel">
+      <a href="javascript:void(0);" class="close">&times;</a>
+      <h2>Settings</h2>
+      <p><i class="icon-moon icon-orbit"></i> <strong>Orbit</strong> camera with left click and drag</p>
+      <p>Here you can place any UI elements that allow users to adjust settings that influence the opporation of your project. Dat.GUI is a popular choice for quickly creating GUI elements.</p>
+    </div>
+
+  </div>
+
+  <div id="headers">
+    <h1>Verold Boiler Plate</h1>
+    <h2><!-- Replace These Headers --></h2>
+  </div>
+
+  <div id="loading-progress-container">
+    <p>Loading...</p>
+    <div class="loading-progress">
+      <div>&nbsp;</div>
+    </div>
+  </div>
+
+  <div id="menu">
+    <a id="info" class="icon-moon icon-info" href="javascript:void(0);"></a>
+    <a id="settings" class="icon-moon icon-settings" href="javascript:void(0);"></a>
+  </div>
+
+  <div id="render-errors"></div>
+
+  <script>
+
+    VAPI.onReady( function() {
+
+      var bc = VAPI.browserCaps;
+
+      // perform some tests to see if browser
+      // is capable of rendering with webGL
+      if(!bc.isWebGLEnabled()) {
+        AppUI.renderError('webGLunsupported');
+        return;
+      }
+
+      if(!bc.isFloatingPointTexturesEnabeled()) {
+        AppUI.renderError('floatingPointTexturesUnavailable');
+        return;
+      }
+
+      if(!bc.isVertexTexturesEnabeled()) {
+        AppUI.renderError('vertexTexturesUnavailable');
+        return;
+      }
+
+      var veroldApp = new VeroldApp();
+      var myApp = new MyApp( veroldApp );
+      
+      veroldApp.initialize( {
+        container : '#render-target-container',
+        projectId : "5142729753ffec02000006e7",
+        enablePostProcess: false,
+        antialias: !veroldApp.isMobile(),
+        enablePicking: true,
+        shadowMapEnabled: true,
+        handleInput: true,
+        clearColor: 0xff0000,
+        forceLowEndRendering: veroldApp.isMobile(),
+        success: function() {
+          myApp.startup();
+        }
+      });
+    });
+
+  </script>
+  
 </body>
 </html>
