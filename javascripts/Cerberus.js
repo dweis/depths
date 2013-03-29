@@ -25,7 +25,7 @@ Cerberus.prototype.update = function(delta, mobs) {
           this.alignToVelocity();
           this.status = 'walk';
         } else {
-          this.status = 'idle';
+          this.status = 'attack';
         }
       } else {
         if (this.isActive) {

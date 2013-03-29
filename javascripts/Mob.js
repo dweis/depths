@@ -66,9 +66,9 @@ Mob.prototype.createMouseJoint = function() {
   var position = this.body.GetPosition();
 
   var md = new b2MouseJointDef();
-  md.maxForce = 100 * this.speed * this.body.GetMass();
+  md.maxForce = 50 * this.speed * this.body.GetMass();
   md.frequencyHz = 60;
-  md.dampingRatio = 25 * (10 - this.speed);
+  md.dampingRatio = 100 * (10 - this.speed);
   md.collideConnected = true;
 
   md.bodyA = this.world.GetGroundBody();

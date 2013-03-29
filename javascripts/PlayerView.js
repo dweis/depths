@@ -40,11 +40,12 @@ PlayerView.prototype.update = function() {
   this.tmpQuaternion.setFromAxisAngle(new THREE.Vector3(0,0,-1), angle - (Math.PI / 2));
   this.model.threeData.quaternion.multiply(this.tmpQuaternion);
 
-  if (this.player.body.GetLinearVelocity().Length() > 0.1) {
+  if (this.player.status == 'walk') {
     this.setAnimation('Walk');
+  } else if (this.player.status == 'attack') {
+    this.setAnimation('Attack');
   } else {
     this.setAnimation('Idle');
-
   }
 }
 

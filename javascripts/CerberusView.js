@@ -31,6 +31,9 @@ CerberusView.prototype.update = function(delta) {
     case 'idle':
       this.setAnimation('CIdle');
       break;
+    case 'attack':
+      this.setAnimation('CAttack');
+      break;
     default:
       this.instance.traverse(function(obj) {
         if (obj instanceof SkinnedMeshObject) {

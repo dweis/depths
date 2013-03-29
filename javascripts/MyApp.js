@@ -6,7 +6,6 @@ MyApp = function( veroldApp ) {
 
   this.veroldApp = veroldApp;  
   this.mainScene;
-  this.camera;
   this.controls;
   this.mobs = [];
 
@@ -35,6 +34,7 @@ MyApp.prototype.startup = function( ) {
       //Bind to input events to control the camera
       that.veroldApp.on("keyDown", that.onKeyPress, that);
       that.veroldApp.on("mouseUp", that.onMouseUp, that);
+      that.veroldApp.on("mouseDown", that.onMouseDown, that);
       that.veroldApp.on("fixedUpdate", that.fixedUpdate, that );
       that.veroldApp.on("update", that.update, that );
 
@@ -58,7 +58,7 @@ MyApp.prototype.startup = function( ) {
       that.camera.lookAt( lookAt );
 
       //Tell the engine to use this camera when rendering the scene.
-      that.veroldApp.setActiveCamera( that.camera );
+      //that.veroldApp.setActiveCamera( that.camera );
 
       that.createMap();
       that.createPlayer();
@@ -149,10 +149,9 @@ MyApp.prototype.createMonsters = function() {
 }
 
 MyApp.prototype.shutdown = function() {
-	
   this.veroldApp.off("keyDown", this.onKeyPress, this);
   this.veroldApp.off("mouseUp", this.onMouseUp, this);
-
+  this.veroldApp.off("mouseDown", this.onMouseDown, this);
   this.veroldApp.off("update", this.update, this );
 }
 
@@ -176,43 +175,50 @@ MyApp.prototype.fixedUpdate = function( delta ) {
   }
 }
 
-MyApp.prototype.onMouseUp = function( event ) {
-  /*
-  if ( event.button == this.inputHandler.mouseButtons[ "left" ] && 
+MyApp.prototype.onMouseDown = function( event ) {
+  if ( event.button == this.inputHandler.mouseButtons[ "left" ] &&
     !this.inputHandler.mouseDragStatePrevious[ event.button ] ) {
-    
+
     var mouseX = event.sceneX / this.veroldApp.getRenderWidth();
     var mouseY = event.sceneY / this.veroldApp.getRenderHeight();
-    var pickData = this.picker.pick( this.mainScene.threeData, this.camera, mouseX, mouseY );
+    var pickData = this.picker.pick( this.mainScene.threeData, this.playerView.getCamera(), mouseX, mouseY );
     if ( pickData ) {
-      //Bind 'pick' event to an asset or just let user do this how they want?
-      if ( pickData.meshID == "51125eb50a4925020000000f") {
-        //Do stuff
+      var mesh = this.mainScene.getObject(pickData.meshID);
+
+      if (mesh.getSourceAsset().entityModel.get('name') == 'Cerberus') {
+        this.player.attack();
       }
     }
   }
-  */
+}
+
+MyApp.prototype.onMouseUp = function( event ) {
   var vector, cameraWorldPos, camera, raycaster, intersects;
 
   if ( event.button == this.inputHandler.mouseButtons[ "left" ] &&
     !this.inputHandler.mouseDragStatePrevious[ event.button ] ) {
-    camera = this.playerView.getCamera();
 
-    var mouseX = (event.clientX / window.innerWidth)*2-1;
-    var mouseY = -(event.clientY /window.innerHeight)*2+1;
+    if (this.player.status == 'attack') {
+      this.player.status = 'idle';
+    } else {
+      camera = this.playerView.getCamera();
 
-    cameraWorldPos = new THREE.Vector3();
-    cameraWorldPos.copy(this.playerView.object.position);
-    cameraWorldPos.add(camera.position);
+      var mouseX = (event.clientX / window.innerWidth)*2-1;
+      var mouseY = -(event.clientY /window.innerHeight)*2+1;
 
-    vector = new THREE.Vector3( mouseX, mouseY, 1.0 );
-    this.projector.unprojectVector( vector, camera );
-    raycaster = new THREE.Raycaster( cameraWorldPos, vector.sub( cameraWorldPos ).normalize() );
+      cameraWorldPos = new THREE.Vector3();
+      cameraWorldPos.copy(this.playerView.object.position);
+      cameraWorldPos.add(camera.position);
 
-    intersects = raycaster.intersectObjects( [this.mousePlane]);
+      vector = new THREE.Vector3( mouseX, mouseY, 1.0 );
+      this.projector.unprojectVector( vector, camera );
+      raycaster = new THREE.Raycaster( cameraWorldPos, vector.sub( cameraWorldPos ).normalize() );
 
-    if (intersects[0]) {
-      this.player.setTarget(intersects[0].point.x, intersects[0].point.z);
+      intersects = raycaster.intersectObjects( [this.mousePlane]);
+
+      if (intersects[0]) {
+        this.player.setTarget(intersects[0].point.x, intersects[0].point.z);
+      }
     }
   }
 }
