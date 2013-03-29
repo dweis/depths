@@ -11,6 +11,7 @@ MyApp = function( veroldApp ) {
   this.mobs = [];
 
   this.projector = new THREE.Projector();
+  this.debug = false;
 }
 
 MyApp.prototype.startup = function( ) {
@@ -107,7 +108,7 @@ MyApp.prototype.createMap = function() {
   this.debugDraw.SetFillAlpha(0.3);
   this.debugDraw.SetLineThickness(1.0);
   this.debugDraw.SetFlags(b2DebugDraw.e_shapeBit | b2DebugDraw.e_jointBit);
-  this.world.SetDebugDraw(this.debugDraw);
+  this.world.SetDebugDraw(null);
 }
 
 MyApp.prototype.createPlayer = function() {
@@ -230,6 +231,14 @@ MyApp.prototype.onKeyPress = function( event ) {
       }
     });
   
+  } else if ( event.keyCode === keyCodes['D'] ) {
+    this.debug = !this.debug;
+    this.world.SetDebugDraw(this.debug ? this.debugDraw : null);
+    if (this.debug) {
+      $('#box2ddebug').show();
+    } else {
+      $('#box2ddebug').hide();
+    }
   }
     
 }
