@@ -24,10 +24,19 @@ CerberusView.prototype.update = function(delta) {
   this.tmpQuaternion.setFromAxisAngle(new THREE.Vector3(0,0,-1), angle - (Math.PI / 2));
   this.instance.threeData.quaternion.multiply(this.tmpQuaternion);
 
-  if (this.cerberus.body.GetLinearVelocity().Length() > 0.1) {
-    this.setAnimation('CWalk');
-  } else {
-    this.setAnimation('CIdle');
+  switch (this.cerberus.status) {
+    case 'walk':
+      this.setAnimation('CWalk');
+      break;
+    case 'idle':
+      this.setAnimation('CIdle');
+      break;
+    default:
+      this.instance.traverse(function(obj) {
+        if (obj instanceof SkinnedMeshObject) {
+          obj.set('payload.animationState', 'pause');
+        }
+      });
   }
 }
 

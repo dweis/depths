@@ -6,6 +6,7 @@ function Cerberus(world, map) {
   this.map = map;
   this.isPlayer = false;
   this.speed = 0.5;
+  this.status = 'inactive';
 }
 
 Cerberus.prototype = new Mob();
@@ -19,12 +20,18 @@ Cerberus.prototype.update = function(delta, mobs) {
 
       if (distance < 5) {
         this.isActive = true;
-        this.setTarget(mobs[i].body.GetPosition().x, mobs[i].body.GetPosition().y);
-        this.alignToVelocity();
+        if (distance > 0.3) {
+          this.setTarget(mobs[i].body.GetPosition().x, mobs[i].body.GetPosition().y);
+          this.alignToVelocity();
+          this.status = 'walk';
+        } else {
+          this.status = 'idle';
+        }
       } else {
         if (this.isActive) {
           this.setTarget(this.body.GetPosition().x, this.body.GetPosition().y);
           this.isActive = false;
+          this.status = 'inactive';
         }
       }
     }

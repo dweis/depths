@@ -136,7 +136,7 @@ MyApp.prototype.createMonsters = function() {
 
   model.load({ success_hierarchy: function() {
     for (i = 0; i < 20; i++) {
-      model.clone({ success_hierarchy: function(modelInstance) {
+      model.clone({ success: function(modelInstance) {
         mob = new Cerberus(that.world, that.map);
         mob.createBody(that.map.getRandomSpawnXY());
 
